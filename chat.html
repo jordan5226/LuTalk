@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="rtwApp">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
+	<title>LuTalk 嚕聊 （Angular Framework Demo）</title>
+	<link rel="icon" type="image/png" href="assets/imgs/icon-rounded.png">
+	<link rel="stylesheet" href="assets/css/chat.css" />
+	<script src="assets/js/mqttws31.min.js"></script>               <!-- 連結MQTT Broker的函式庫 -->
+	<script src="assets/js/Math.uuid.js"></script>                  <!-- 一個產生Unique ID的函式庫 -->
+	<script src="assets/js/angular.min.js"></script>                <!-- 操控網頁元件的函式庫 -->
+	<script src="assets/js/jquery-3.0.0.min.js"></script>           <!-- 操控網頁元件的函式庫 -->
+	<script src="assets/js/angular-visibility-change.js"></script>	<!--  Page Visibility API -->
+	<script src="assets/js/moment.min.js"></script>
+  
+	<script type="text/javascript">
+		function autoClick () {
+			document.getElementById('btnConnect').click();
+		}
+	</script>
+</head>
+<body onLoad="autoClick()" ng-controller="rtwAppCtrl">
+	
+	<div id="container">
+		<div id="top" ng-show="!vm.myname_subscribed">
+			<div id="head" style="text-align:center">
+				<h1 style="color: #ff0951; white-space:nowrap;">LuTalk 嚕聊</h1>
+			</div>
+			<!-- 網頁表單UI -->
+			<div id="connect">
+				<button id="btnConnect" style="display:none;" ng-click="action.connect()"></button>
+			</div>
+			<div id="setting" style="text-align:center">
+				<div id="myname">
+					<input type="text" name="myname" placeholder="輸入我的暱稱" autocomplete="off" ng-model="vm.myname">
+				</div>
+				<div id="object">
+					<input type="text" name="object" placeholder="輸入密語對象" autocomplete="off" ng-model="vm.object">
+				</div>
+				<button id="btnSubscribe" ng-click="action.changeState()">{{vm.stateBtn}}</button>
+			</div>
+		</div>
+		<div id="content" schroll-Bottom="vm.chatLog" ng-show="vm.has_chatLog">
+			<div id="app_logo">
+				<img src="assets/imgs/icon-rounded.png"><br>
+				<h1 style="color: #ff0951; white-space:nowrap;">LuTalk 嚕聊</h1>
+				<span style="font-size: 18px;">【系統消息】 連線中...</span> <br> <br>
+				<span style="font-size: 18px;" ng-show="vm.connected">【系統消息】 連線完成，開始聊天吧～</span>
+			</div>
+			<div mid="0" ng-repeat="logItem in vm.chatLog">
+				<!-- 我方發言 -->
+				<div class="msg right" ng-if="logItem.name.localeCompare(vm.myname) == 0">
+					<div id="msg_info_right">
+						<div id="read_state">{{logItem.state}}</div>
+						<div id="msg_time">{{logItem.time}}</div>
+					</div>
+					<div id="text">
+						{{logItem.name}}：{{logItem.content}}<span class="trigon"></span>
+					</div>
+				</div>
+				<!-- 收到對方離開消息，顯示該消息
+				<div class="msg middle" ng-if="logItem.state == 'system'">
+					<div id="text" style="text-align: center; white-space:nowrap;">
+						<span style="font-size: 18px;" ng-show="vm.object_leave">{{logItem.content}}</span>
+					</div>
+				</div> -->
+				<!-- 對方發言 -->
+				<div class="msg left" ng-if="logItem.name.localeCompare(vm.myname) != 0 && logItem.name != ' '">
+					<div id="msg_info_left">
+						<div id="msg_from">Web</div>
+						<div id="msg_time">{{logItem.time}}</div>
+					</div>
+					<div id="text">
+						{{logItem.name}}：{{logItem.content}}<span class="trigon"></span>
+					</div>
+				</div>
+			</div>
+			<div id="system_leave" ng-show="vm.object_leave">
+				<span style="font-size: 18px; text-align: center;">對方已離開，請按離開按鈕退出。</span>
+			</div>
+		</div>
+		
+		<footer ng-show="vm.myname_subscribed">
+			<form>
+				<div id="sendBox">
+					<div id="test">
+						<button id="testBtn" type="button" ng-click="action.changeState()">離開</button>
+					</div>
+					<div id="msgInput">
+						<input type="text" placeholder="輸入訊息" autocomplete="off" ng-model="vm.message">
+					</div>
+					<div id="send">
+						<button id="sendBtn" type="submit" ng-click="action.sendMessage()">發送</button>
+					</div>
+				</div>
+			</form>
+		</footer>
+	</div>
+  
+	<!-- 程式邏輯 -->
+	<script type="text/javascript" src="assets/js/chat-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+html {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	background-image:url(../imgs/bg.jpg);
+	background-repeat: repeat;
+	background-size: cover;
+	background-position: 0 0;
+	height: 98.5%;
+	margin-top: -16px;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+#container {
+	height: 100%;
+	width: auto;
+	margin: 0 auto;
+	padding-bottom: 40px;
+	position: relative;
+	vertical-align: bottom;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#top {
+	height: 50%;
+	width: auto;
+	padding-top: 20px;
+}
+
+#head {
+	height: auto;
+	margin: 5px auto;
+	position: relative;
+}
+
+#connect{
+	height: 0%;
+}
+
+#setting {
+	height: 70%;
+	padding: 5px;
+	text-align: center;
+}
+
+#myname {
+	height: auto;
+	margin: 5px auto 20px auto;
+	position: relative;
+}
+
+#object{
+	height: auto;
+	margin: 20px auto;
+	position: relative;
+}
+
+#setting input {
+	height: auto;
+	max-width: 90%;
+	border-radius: 3px;
+	border:1px solid #ddd;
+	padding: 5px 10px;
+	background: rgba(255,255,255,0.5);
+	font-size: 25px;
+	font-weight: 600;
+	text-align: center;
+	white-space:nowrap;
+	color: #ff0951;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#setting button {
+	height: 50px;
+	width: 30%;
+	color: #fff;
+	padding: 5px 10px;
+	margin: 5px auto;
+	border:none;
+	border-radius: 3px;
+	background: #777;
+	cursor: pointer;
+	font-size: 20px;
+	white-space:nowrap;
+}
+
+#setting button:active {
+	opacity: 0.8;
+}
+
+/* 头部 */
+#container header {
+	color:#999;
+	text-align: center;
+	margin: 0 auto;
+	padding: 10px 0;
+	border-bottom: 1px solid #ddd;
+}
+
+#container header img {
+	width:40px;
+	height:40px;
+	border-radius: 5px;
+	border:1px solid #ccc;
+	vertical-align:middle;
+	margin: 0 10px 0 0;
+}
+
+/* 聊天框 */
+#content {
+	height: 100%;
+	max-width: 500px;
+	margin: 20px auto 0 auto;
+	padding: 10px 10px 0 10px;	
+	overflow: hidden;
+	overflow-y: auto;
+	line-height: 1.35;
+	text-align: center;
+	border-radius: 10px 10px 0px 0px;
+	background-color: rgba(255,255,255,0.2);
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#app_logo {
+	height: auto;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+#app_logo img {
+	height: 100px;
+	width: 100px;
+}
+
+#msg_info_right {
+	width: 33px;
+	position: absolute;
+    bottom: 0px;
+    margin: 0px 3px;
+    background-color: transparent;
+    border: 0;
+    color: #AAA;
+    font-size: 12px;
+    padding: 0px;
+    width: auto;
+	left: -60px;
+    text-align: right;
+}
+
+#msg_info_left {
+	width: 33px;
+	position: absolute;
+    bottom: 0px;
+    margin: 0px 3px;
+    background-color: transparent;
+    border: 0;
+    color: #AAA;
+    font-size: 12px;
+    padding: 0px;
+    width: auto;
+	right: -60px;
+    text-align: left;
+}
+
+#read_state {
+}
+
+#msg_time {
+}
+
+#text {
+	word-wrap: break-word;
+	word-break: normal;
+	text-align: left;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+.msg {
+	max-width: 75%;
+	font-size: 16px;
+	letter-spacing: 1px;
+	border-bottom-left-radius: 16px;
+	border-bottom-right-radius: 16px;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+	margin: 10px 0;
+	padding-bottom: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-top: 8px;
+	clear: both;
+	position: relative;
+	display: inline;
+}
+
+/* 接收的信息 */
+.msg.left {
+	float: left;
+	background: #e5e5ea;
+	margin-left: 8px;
+}
+
+.msg.left .trigon {
+  bottom:8px;
+  left: -15px;
+  border-color: transparent #e5e5ea transparent transparent;
+}
+
+/* 我发的信息 */
+.msg.right {
+	float: right;
+	background: #ff5e3a;
+	color: #fff;
+	margin-right: 8px;
+}
+
+.msg.right .trigon {
+  bottom:8px;
+  right: -15px;
+  border-color:transparent transparent transparent #ff5e3a;
+}
+
+/* 系統消息 */
+.msg.middle {
+	float: left;
+	position: relative;
+}
+
+#system_leave {
+	float: left;
+	position: relative;
+	width: 100%;
+	text-align: center;
+	white-space: nowrap;
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+
+/* 尾部 */
+#container footer {
+	padding: 3px 0;
+	text-align: center;
+	border-radius: 5px;
+	background: #ddd;
+	position: relative;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 40px;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#sendBox {
+	width: 100%;
+	height: 34px;
+	text-align: center;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: table;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#test {
+	height: 34px;
+	width: 46px;
+	display: table-cell;
+}
+
+#msgInput {
+	height: 34px;
+	width: auto;
+	display: table-cell;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#send {
+	height: 34px;
+	width: 46px;
+	display: table-cell;
+}
+
+#sendBox input {
+	width: 100%;
+	height: 34px;
+	border-radius: 3px;
+	border:1px solid #ddd;
+	padding: 5px 10px;
+	white-space:nowrap;
+	-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+			box-sizing: border-box; /*元素的內距和邊框將不會增加元素本身的寬度*/
+}
+
+#sendBox button {
+	height: 34px;
+	color: #fff;
+	padding: 5px 10px;
+	border:none;
+	border-radius: 3px;
+	background: #777;
+	cursor: pointer;
+	text-align: center;
+	white-space:nowrap;
+}
+
+#sendBox button:active {
+	opacity: 0.8;
+}
+
+/* 三角形 */
+.trigon {
+  width: 0;
+  height: 0;
+  border-width: 10px;
+  border-style: solid;
+  position: absolute;
+  z-index: 0;
+}
