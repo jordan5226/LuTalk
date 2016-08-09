@@ -11,7 +11,7 @@ The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT ser
 # 功能
 包含了基本即時聊天所需之功能<br>
 介面上會顯示 會話已連線/對方已離開<br>
-介面還會顯示對方讀取消息之狀態，以及消息發送時的時間戳記<br>
+介面還會顯示對方讀取消息之狀態(已讀、未讀)，以及消息發送時的時間戳記<br>
 <br>
 尚未有"記錄聊天消息"的功能<br>
 也沒有"匿名配對聊天"的功能<br>
