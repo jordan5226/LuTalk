@@ -95,24 +95,6 @@ body {
 	opacity: 0.8;
 }
 
-/* 头部 */
-#container header {
-	color:#999;
-	text-align: center;
-	margin: 0 auto;
-	padding: 10px 0;
-	border-bottom: 1px solid #ddd;
-}
-
-#container header img {
-	width:40px;
-	height:40px;
-	border-radius: 5px;
-	border:1px solid #ccc;
-	vertical-align:middle;
-	margin: 0 10px 0 0;
-}
-
 /* 聊天框 */
 #content {
 	height: 100%;
@@ -204,7 +186,7 @@ body {
 	display: inline;
 }
 
-/* 接收的信息 */
+/* 接收的消息 */
 .msg.left {
 	float: left;
 	background: #e5e5ea;
@@ -217,7 +199,7 @@ body {
   border-color: transparent #e5e5ea transparent transparent;
 }
 
-/* 我发的信息 */
+/* 我發的消息 */
 .msg.right {
 	float: right;
 	background: #ff5e3a;
