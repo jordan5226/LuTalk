@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿<!--
+Title:			LuTalk 嚕聊 - The Real-time Web Chat App
+Author:			Jordan Yeh
+Date(YY/MM/DD):	2016/08/11
+Description:
+	This is an 1 to 1 online chat webpage for LuTalk.
+	Implement with AngularJs framework and MQTT protocol. 
+-->
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" ng-app="rtwApp">
 <head>
 	<meta charset="utf-8" />
@@ -20,7 +28,6 @@
 	</script>
 </head>
 <body onLoad="autoClick()" ng-controller="rtwAppCtrl">
-	
 	<div id="container">
 		<div id="top" ng-show="!vm.myname_subscribed">
 			<div id="head" style="text-align:center">

@@ -1,7 +1,7 @@
 ﻿/*==================================================================*/
 /* Title:          LuTalk 嚕聊 - The Real-time Web Chat App(Script) */
 /* Author:         Jordan  Yeh                                      */
-/* Date(YY/MM/DD): 2016/08/10                                       */
+/* Date(YY/MM/DD): 2016/08/11                                       */
 /* Description:                                                     */
 /*   This is an 1 to 1 online chat script for LuTalk.               */
 /*   Implement with AngularJs framework and MQTT protocol.          */
@@ -102,8 +102,8 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 				// 若已建立連線，則發送離開消息
 				sendMsg("Quit"+ strSeparator + " " + strSeparator + " ");
 			}
-			
-			mqtt_client.unsubscribe(myname);
+			if(!$scope.vm.object_leave)          // 當對方離開後則不再"取消訂閱對方"，因為在對方離開時已經先取消訂閱了
+				mqtt_client.unsubscribe(myname); // 對方還沒離開時才取消訂閱對方
 			console.log("unsubscribed");
 			// UI元件的控制
 			$scope.vm.connected = false;         // 連線狀態flag標記為false
@@ -195,6 +195,7 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 		// 判斷收到的消息是否為對方已離開(Quit)
 		else if(msg[0].localeCompare("Quit")==0 && msg[1].localeCompare(" ")==0
 			&& msg[2].localeCompare(" ")==0) {
+			mqtt_client.unsubscribe($scope.vm.myname); // 取消訂閱對方
 			$scope.vm.object_leave = true;  // 對方離開狀態flag標記為true
 			$scope.vm.connected = false;    // 連線狀態flag標記為false
 			// 在聊天窗口顯示對方離開信息
