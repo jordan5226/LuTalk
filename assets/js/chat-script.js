@@ -4,7 +4,7 @@
 /* Date(YY/MM/DD): 2016/08/10                                       */
 /* Description:                                                     */
 /*   This is an 1 to 1 online chat script for LuTalk.               */
-/*   Implement with AngularJs framework and MQTT service.           */
+/*   Implement with AngularJs framework and MQTT protocol.          */
 /*==================================================================*/
 
 // MQTT配置
