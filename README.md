@@ -1,5 +1,5 @@
 # LuTalk
-The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT service.
+The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT protocal.
 
 # LuTalk 嚕聊
 這是一個即時聊天Web應用 <br>
@@ -9,8 +9,8 @@ The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT ser
 因此若看倌發覺介面有點熟悉還請不要見怪<br>
 
 # 功能
-包含了基本即時聊天所需之功能<br>
-介面上會顯示 會話已連線/對方已離開<br>
+包含了基本即時聊天所需之功能：發送消息和接收消息<br>
+介面上會顯示 "連線已建立/對方已離開" 之狀態提示<br>
 介面還會顯示對方讀取消息之狀態(已讀、未讀)，以及消息發送時的時間戳記<br>
 <br>
 尚未有"記錄聊天消息"的功能<br>
@@ -23,3 +23,8 @@ The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT ser
 有BUG也歡迎回報<br>
 敬請提問<br>
 <br>
+<br>
+# 環境配置
+關於開發過程中具體所需的環境之安裝，請參考以下網頁之詳細講解<br>
+<a href="http://eighty20.cc/apps/e2-rtw-v01/index.html" target="_blank" title="即時網頁應用開發 - 手把手">http://eighty20.cc/apps/e2-rtw-v01/index.html</a> <br>
+特別要感謝講者整理的一系列教學，獲益良多<br>
