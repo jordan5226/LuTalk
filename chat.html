@@ -29,7 +29,7 @@ Description:
 </head>
 <body onLoad="autoClick()" ng-controller="rtwAppCtrl">
 	<div id="container">
-		<div id="top" ng-show="!vm.myname_subscribed">
+		<div id="top" ng-show="!vm.bSubscribed_strMyname">
 			<div id="head" style="text-align:center">
 				<h1 style="color: #ff0951; white-space:nowrap;">LuTalk 嚕聊</h1>
 			</div>
@@ -39,24 +39,24 @@ Description:
 			</div>
 			<div id="setting" style="text-align:center">
 				<div id="myname">
-					<input type="text" name="myname" placeholder="輸入我的暱稱" autocomplete="off" ng-model="vm.myname">
+					<input type="text" name="myname" placeholder="輸入我的暱稱" autocomplete="off" ng-model="vm.strMyname">
 				</div>
 				<div id="object">
-					<input type="text" name="object" placeholder="輸入密語對象" autocomplete="off" ng-model="vm.object">
+					<input type="text" name="object" placeholder="輸入密語對象" autocomplete="off" ng-model="vm.strObject">
 				</div>
 				<button id="btnSubscribe" ng-click="action.changeState()">{{vm.stateBtn}}</button>
 			</div>
 		</div>
-		<div id="content" schroll-Bottom="vm.chatLog" ng-show="vm.has_chatLog">
+		<div id="content" schroll-Bottom="vm.chatLog" ng-show="vm.bHasChatlog">
 			<div id="app_logo">
 				<img src="assets/imgs/icon-rounded.png"><br>
 				<h1 style="color: #ff0951; white-space:nowrap;">LuTalk 嚕聊</h1>
 				<span style="font-size: 18px;">【系統消息】 連線中...</span> <br> <br>
-				<span style="font-size: 18px;" ng-show="vm.connected">【系統消息】 連線完成，開始聊天吧～</span>
+				<span style="font-size: 18px;" ng-show="vm.bConnected">【系統消息】 連線完成，開始聊天吧～</span>
 			</div>
 			<div mid="0" ng-repeat="logItem in vm.chatLog">
 				<!-- 我方發言 -->
-				<div class="msg right" ng-if="logItem.name.localeCompare(vm.myname) == 0">
+				<div class="msg right" ng-if="logItem.name.localeCompare(vm.strMyname) == 0">
 					<div id="msg_info_right">
 						<div id="read_state">{{logItem.state}}</div>
 						<div id="msg_time">{{logItem.time}}</div>
@@ -68,11 +68,11 @@ Description:
 				<!-- 收到對方離開消息，顯示該消息
 				<div class="msg middle" ng-if="logItem.state == 'system'">
 					<div id="text" style="text-align: center; white-space:nowrap;">
-						<span style="font-size: 18px;" ng-show="vm.object_leave">{{logItem.content}}</span>
+						<span style="font-size: 18px;" ng-show="vm.bLeave_strObject">{{logItem.content}}</span>
 					</div>
 				</div> -->
 				<!-- 對方發言 -->
-				<div class="msg left" ng-if="logItem.name.localeCompare(vm.myname) != 0 && logItem.name != ' '">
+				<div class="msg left" ng-if="logItem.name.localeCompare(vm.strMyname) != 0 && logItem.name != ' '">
 					<div id="msg_info_left">
 						<div id="msg_from">Web</div>
 						<div id="msg_time">{{logItem.time}}</div>
@@ -82,19 +82,19 @@ Description:
 					</div>
 				</div>
 			</div>
-			<div id="system_leave" ng-show="vm.object_leave">
+			<div id="system_leave" ng-show="vm.bLeave_strObject">
 				<span style="font-size: 18px; text-align: center;">對方已離開，請按離開按鈕退出。</span>
 			</div>
 		</div>
 		
-		<footer ng-show="vm.myname_subscribed">
+		<footer ng-show="vm.bSubscribed_strMyname">
 			<form>
 				<div id="sendBox">
 					<div id="test">
 						<button id="testBtn" type="button" ng-click="action.changeState()">離開</button>
 					</div>
 					<div id="msgInput">
-						<input type="text" placeholder="輸入訊息" autocomplete="off" ng-model="vm.message">
+						<input type="text" placeholder="輸入訊息" autocomplete="off" ng-model="vm.strMessage">
 					</div>
 					<div id="send">
 						<button id="sendBtn" type="submit" ng-click="action.sendMessage()">發送</button>

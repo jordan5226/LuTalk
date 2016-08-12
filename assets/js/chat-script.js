@@ -27,18 +27,18 @@ rtwApp.factory('now', function() {
 rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 	// 初始化view model的資料與變數
 	$scope.vm = {};
-	$scope.vm.myname = "";                    // 我的名稱
-	$scope.vm.object = "";                    // 對方名稱
+	$scope.vm.strMyname = "";                    // 我的名稱
+	$scope.vm.strObject = "";                    // 對方名稱
 	$scope.vm.last_object = "";               // 上一個發送目標
-	$scope.vm.message = "";                   // 消息輸入框中的字串
+	$scope.vm.strMessage = "";                   // 消息輸入框中的字串
 	$scope.vm.stateBtn = "開始聊天";          // 開始聊天按鈕(訂閱主題按鈕)
 	$scope.vm.chatLog = [];                   // 聊天記錄
-	$scope.vm.has_chatLog = false;            // 是否有聊天記錄
-	$scope.vm.myname_subscribed = false;      // 是否有訂閱主題
-	$scope.vm.connected = false;              // 雙方是否已連線
-	$scope.vm.object_leave = false;           // 對方是否已離開
-	$scope.vm.visibility = true;              // 用戶目前是否正在使用當前頁面
-	$scope.vm.replychked = false;             // 收到訊息後是否已知會對方已讀
+	$scope.vm.bHasChatlog = false;            // 是否有聊天記錄
+	$scope.vm.bSubscribed_strMyname = false;      // 是否有訂閱主題
+	$scope.vm.bConnected = false;              // 雙方是否已連線
+	$scope.vm.bLeave_strObject = false;           // 對方是否已離開
+	$scope.vm.bVisibility = true;              // 用戶目前是否正在使用當前頁面
+	$scope.vm.bChked_And_Reply = false;             // 收到訊息後是否已知會對方已讀
 	
 	
 	// 設定UI會觸發的動作
@@ -59,60 +59,65 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 	
 	/* 傳送訊息按鈕事件 */
 	$scope.action.sendMessage = function() {
-		if(!$scope.vm.connected) {                                         // 若尚未連線則不可發送消息
+		if(!$scope.vm.bConnected) {                                         // 若尚未連線則不可發送消息
 			return;
-		} else if($scope.vm.object.trim().length == 0
-			|| $scope.vm.message.trim().length == 0) {                     // 若必填欄位為空則函數返回
+		} else if($scope.vm.strObject.trim().length == 0
+			|| $scope.vm.strMessage.trim().length == 0) {                     // 若必填欄位為空則函數返回
 			console.log("Colum can not be blank!");
 			return;
-		} else if($scope.vm.object.localeCompare($scope.vm.myname) == 0) { // 發送對象不可以是自己
+		} else if($scope.vm.strObject.localeCompare($scope.vm.strMyname) == 0) { // 發送對象不可以是自己
 			console.log("Can not send msg to myself!");
 			return;
 		}
 		// 限定消息字串長度
-		if($scope.vm.message.trim().length > 495) {
-			$scope.vm.message = $scope.vm.message.substr(0, 495);
+		if($scope.vm.strMessage.trim().length > 495) {
+			$scope.vm.strMessage = $scope.vm.strMessage.substr(0, 495);
 		}
 		var time_now = now();    // 取得當前時間
 		$scope.vm.chatLog.push({ // 將消息推入聊天消息列表
 			time: time_now,
 			state: "未讀",
-			name: $scope.vm.myname,
-			content: $scope.vm.message
+			name: $scope.vm.strMyname,
+			content: $scope.vm.strMessage
 		});
-		$scope.vm.has_chatLog = true; // 聊天記錄有消息
+		$scope.vm.bHasChatlog = true; // 聊天記錄有消息
 		// 發送消息
-		sendMsg(time_now + strSeparator + $scope.vm.myname + strSeparator + $scope.vm.message); 
+		var newMsg = "";
+		var tmpMsg = $scope.vm.strMessage.split(strSeparator); // 用戶的input message雍正一下
+		for(var idx in tmpMsg) {
+			newMsg += tmpMsg[idx];
+		}
+		sendMsg(time_now + strSeparator + $scope.vm.strMyname + strSeparator + newMsg); 
 		
-		$scope.vm.message = "";
-		$scope.vm.last_object = $scope.vm.object; // 暫存上一個發送目標
+		$scope.vm.strMessage = ""; // 用戶input欄位清空
+		$scope.vm.last_object = $scope.vm.strObject; // 暫存上一個發送目標
 	};
 	
 	/* 開始、離開按鈕之訂閱事件 */
 	$scope.action.changeState = function() {
-		if($scope.vm.myname.trim().length == 0
-			|| $scope.vm.object.trim().length == 0) // 若首頁雙input欄位有空值則函數返回
+		if($scope.vm.strMyname.trim().length == 0
+			|| $scope.vm.strObject.trim().length == 0) // 若首頁雙input欄位有空值則函數返回
 			return;
 		// 訂閱或解除訂閱消息
-		var myname = $scope.vm.myname;
-		if($scope.vm.myname_subscribed == true) {
+		var myname = $scope.vm.strMyname;
+		if($scope.vm.bSubscribed_strMyname == true) {
 			// 要解除訂閱
 			// 先告訴對方目標我離開了
-			if($scope.vm.connected) {            // 若尚未建立連線，則直接解除訂閱
+			if($scope.vm.bConnected) {            // 若尚未建立連線，則直接解除訂閱
 				// 若已建立連線，則發送離開消息
 				sendMsg("Quit"+ strSeparator + " " + strSeparator + " ");
 			}
-			if(!$scope.vm.object_leave)          // 當對方離開後則不再"取消訂閱對方"，因為在對方離開時已經先取消訂閱了
+			if(!$scope.vm.bLeave_strObject)          // 當對方離開後則不再"取消訂閱對方"，因為在對方離開時已經先取消訂閱了
 				mqtt_client.unsubscribe(myname); // 對方還沒離開時才取消訂閱對方
 			console.log("unsubscribed");
 			// UI元件的控制
-			$scope.vm.connected = false;         // 連線狀態flag標記為false
-			$scope.vm.object_leave = false;      // 對方離開狀態flag標記為false
+			$scope.vm.bConnected = false;         // 連線狀態flag標記為false
+			$scope.vm.bLeave_strObject = false;      // 對方離開狀態flag標記為false
 			$scope.vm.stateBtn = "開始聊天";     // 更換上下線button的label
-			$scope.vm.myname_subscribed = false; // 更新flag
-			$scope.vm.has_chatLog = false;
+			$scope.vm.bSubscribed_strMyname = false; // 更新flag
+			$scope.vm.bHasChatlog = false;
 			$scope.vm.chatLog = [];
-			$scope.vm.message = "";
+			$scope.vm.strMessage = "";
 		} else {
 			// 要訂閱訊息主題
 			mqtt_client.subscribe(myname);
@@ -121,9 +126,9 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 			console.log("subscribed");
 			// UI元件的控制
 			$scope.vm.stateBtn = "離開";         // 更換上下線button的label
-			$scope.vm.myname_subscribed = true;  // 更新flag
+			$scope.vm.bSubscribed_strMyname = true;  // 更新flag
 			$scope.vm.chatLog = [];              // 先把聊天記錄清空
-			$scope.vm.has_chatLog = true;
+			$scope.vm.bHasChatlog = true;
 		}
 	};
 	
@@ -141,7 +146,7 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 		}
 		// UI元件與程式邏輯的控制
 		$scope.vm.mqtt_connected = false;
-		$scope.vm.connected = false; // 連線狀態flag標記為false
+		$scope.vm.bConnected = false; // 連線狀態flag標記為false
 	};
 	
 	/* (接收到消息) 當訂閱的主題有訊息時會被呼叫的callback function */
@@ -149,8 +154,7 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 		// 打印到Browser的debug console
 		console.log("onMessageArrived");
 		// 切割收到的消息
-		msg = message.payloadString.split(strSeparator);
-		
+		var msg = message.payloadString.split(strSeparator);
 		/* Do: 判斷接收到的消息是否為系統指令 */
 		
 		// 判斷收到的消息是否為知會已讀消息(Read!)
@@ -179,25 +183,25 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 			&& msg[2].localeCompare(" ")==0) {
 			// 向對方回送已上線消息
 			sendMsg("Online"+ strSeparator + " " + strSeparator + " ");
-			$scope.vm.connected = true;     // 連線狀態flag標記為true
-			$scope.vm.object_leave = false; // 對方離開狀態flag標記為false
+			$scope.vm.bConnected = true;     // 連線狀態flag標記為true
+			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                // update ui immediately
 			return;
 		}
 		// 判斷收到的消息是否為已上線消息(Online)
 		else if(msg[0].localeCompare("Online")==0 && msg[1].localeCompare(" ")==0
 			&& msg[2].localeCompare(" ")==0) {
-			$scope.vm.connected = true;     // 連線狀態flag標記為true
-			$scope.vm.object_leave = false; // 對方離開狀態flag標記為false
+			$scope.vm.bConnected = true;     // 連線狀態flag標記為true
+			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                // update ui immediately
 			return;
 		}
 		// 判斷收到的消息是否為對方已離開(Quit)
 		else if(msg[0].localeCompare("Quit")==0 && msg[1].localeCompare(" ")==0
 			&& msg[2].localeCompare(" ")==0) {
-			mqtt_client.unsubscribe($scope.vm.myname); // 取消訂閱對方
-			$scope.vm.object_leave = true;  // 對方離開狀態flag標記為true
-			$scope.vm.connected = false;    // 連線狀態flag標記為false
+			mqtt_client.unsubscribe($scope.vm.strMyname); // 取消訂閱對方
+			$scope.vm.bLeave_strObject = true;  // 對方離開狀態flag標記為true
+			$scope.vm.bConnected = false;    // 連線狀態flag標記為false
 			// 在聊天窗口顯示對方離開信息
 			// 隨便加個系統消息進聊天列表，以更新content讓捲軸置底
 			$scope.vm.chatLog.push({
@@ -220,14 +224,14 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 			content: msg[2]
 		});
 		
-		$scope.vm.has_chatLog = true;  // 聊天記錄有消息
+		$scope.vm.bHasChatlog = true;  // 聊天記錄有消息
 		$scope.$apply();               // update ui immediately
 		
 		// 若用戶正在檢視當前頁面，則向對方知會已讀
-		if($scope.vm.visibility) {
+		if($scope.vm.bVisibility) {
 			replyRead("onMessageArrived, viewing reply"); // 向對方知會已讀
 		} else { // 若用戶並未檢視當前頁面
-			$scope.vm.replychked = false;                 // 設置收到訊息後尚未知會對方
+			$scope.vm.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
 			// 頁面發出提示音效
 			//....
 			
@@ -239,16 +243,16 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 	sendMsg = function(strMsg) {
 		var msg = strMsg;
 		var mqtt_msg = new Paho.MQTT.Message(msg);
-		mqtt_msg.destinationName = $scope.vm.object;
+		mqtt_msg.destinationName = $scope.vm.strObject;
 		mqtt_client.send(mqtt_msg);
 	}
 	
 	/* 向對方知會已讀 */
 	replyRead = function(strLog) {
-		if($scope.vm.connected) {        // 若尚未連線則不動作
+		if($scope.vm.bConnected) {        // 若尚未連線則不動作
 			// 已連線則向對方知會已讀
 			sendMsg("Read!"+ strSeparator + " " + strSeparator + "daeR");
-			$scope.vm.replychked = true; // 設置收到訊息後已知會對方
+			$scope.vm.bChked_And_Reply = true; // 設置收到訊息後已知會對方
 			console.log(strLog);
 		}
 	};
@@ -257,7 +261,7 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 	VisibilityChange.onVisible(function() {
 		console.log('onVisible callback called at ' + now());
 		// 用戶回到當前頁面後，若尚未知會對方已讀，則向對方知會已讀
-		if(!$scope.vm.replychked) {
+		if(!$scope.vm.bChked_And_Reply) {
 			replyRead("change-back reply"); // 向對方知會已讀
 		}
 	})
@@ -270,7 +274,7 @@ rtwApp.controller('rtwAppCtrl', function($scope, now, VisibilityChange) {
 	/* 頁面切換時之調用函數 */
 	VisibilityChange.onChange(function(visible) {
 		console.log('onChange callback called at ' + now() + ' with ' + visible);
-		$scope.vm.visibility = visible;
+		$scope.vm.bVisibility = visible;
 	})
 });
 
