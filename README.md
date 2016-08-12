@@ -14,6 +14,7 @@ The Real-time Web Chat App Demo. Implement with AngularJs framework and MQTT pro
 3. 聊天介面也會顯示對方讀取消息之狀態(已讀、未讀)，以及消息發送時的時間戳記<br>
 4. 當瀏覽器頁面並非正在瀏覽LuTalk時，接收到消息則會發出提示音效，同時網頁標題也會顯示未讀消息數量以提示用戶<br>
 <br>
+
 尚未有"記錄聊天消息"的功能<br>
 也沒有"匿名配對聊天"的功能<br>
 這兩個功能都要等到資料庫存取實作後才會有<br>
