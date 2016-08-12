@@ -7,11 +7,11 @@ Description:
 	Implement with AngularJs framework and MQTT protocol. 
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" ng-app="rtwApp">
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="luTalkApp" ng-controller = "luTalkAppCtrl">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
-	<title>LuTalk 嚕聊 （Angular Framework Demo）</title>
+	<title>{{vm.pageTitle}}</title>
 	<link rel="icon" type="image/png" href="assets/imgs/icon-rounded.png">
 	<link rel="stylesheet" href="assets/css/chat.css" />
 	<script src="assets/js/mqttws31.min.js"></script>               <!-- 連結MQTT Broker的函式庫 -->
@@ -27,7 +27,7 @@ Description:
 		}
 	</script>
 </head>
-<body onLoad="autoClick()" ng-controller="rtwAppCtrl">
+<body onLoad="autoClick()">
 	<div id="container">
 		<div id="top" ng-show="!vm.bSubscribed_strMyname">
 			<div id="head" style="text-align:center">
@@ -103,7 +103,10 @@ Description:
 			</form>
 		</footer>
 	</div>
-  
+	
+	<div style="display:none; width:0; height:0;" ng-repeat="audio in event.audios" ng-show="vm.bPlaySound">
+		<div style="width:0; height:0;" audios code="audio" ng-if="vm.bPlaySound"></div>
+	</div>
 	<!-- 程式邏輯 -->
 	<script type="text/javascript" src="assets/js/chat-script.js"></script>
 </body>
