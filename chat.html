@@ -107,6 +107,10 @@ Description:
 	<div style="display:none; width:0; height:0;" ng-repeat="audio in event.audios" ng-show="vm.bPlaySound">
 		<div style="width:0; height:0;" audios code="audio" ng-if="vm.bPlaySound"></div>
 	</div>
+	<div style="display:none; width:0; height:0;">
+		<!-- 頁面載入時靜音撥放音頻以載入音頻文件緩衝，避免使用preload卻被browser當作hint而失效-->
+		<audio style="width:0; height:0;" src="assets/media/incomingMsg.wav" controls autoplay muted></audio>
+	</div>
 	<!-- 程式邏輯 -->
 	<script type="text/javascript" src="assets/js/chat-script.js"></script>
 </body>

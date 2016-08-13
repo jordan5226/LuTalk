@@ -144,7 +144,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, now, VisibilityChange) {
 			$scope.vm.stateBtn = "離開";             // 更換上下線button的label
 			$scope.vm.bSubscribed_strMyname = true;  // 更新flag
 			$scope.vm.chatLog = [];                  // 先把聊天記錄清空
-			$scope.vm.bHasChatlog = true;
+			$scope.vm.bHasChatlog = true;            // 聊天記錄設為有消息，以顯示聊天對話框
 		}
 	};
 	
