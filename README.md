@@ -1,6 +1,7 @@
 # LuTalk
 The Real-time Web Chat App Demo.<br>
 Implement with AngularJs framework and MQTT protocal.<br>
+Attention: The IE web browser may not be well support LuTalk.<br>
 Demo: <a href="http://5566.noip.me" target="_blank">http://5566.noip.me</a><br>
 
 # LuTalk 嚕聊
@@ -21,6 +22,9 @@ Demo: <a href="http://5566.noip.me" target="_blank">http://5566.noip.me</a><br>
 也沒有"匿名配對聊天"的功能<br>
 這兩個功能都要等到資料庫存取實作後才會有<br>
 目前來說，要配對聊天需要輸入自己的名稱與對方的名稱，才能配對<br>
+<br>
+注意：IE瀏覽器可能沒辦法良好支援
+<br>
 <br>
 # 問題與建議
 歡迎提供意見與想法讓我能參考<br><br>
