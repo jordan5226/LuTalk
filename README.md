@@ -1,5 +1,5 @@
 # LuTalk
-The Real-time Web Chat App Demo.<br>
+The Real-time Web Chat App.<br>
 Implement with AngularJs framework and MQTT protocal.<br>
 Attention: The IE web browser may not be well support LuTalk.<br>
 Demo: <a href="http://5566.noip.me" target="_blank">http://5566.noip.me</a><br>
