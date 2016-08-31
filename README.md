@@ -26,6 +26,16 @@ Demo: <a href="http://5566.noip.me" target="_blank">http://5566.noip.me</a><br>
 注意：IE瀏覽器可能沒辦法良好支援
 <br>
 <br>
+# 畫面展示
+1. Home page<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_home.png)<br>
+2. Build a connection<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_connected.png)<br>
+3. Chatting<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_chatting.png)<br>
+
+<br>
+<br>
 # 問題與建議
 歡迎提供意見與想法讓我能參考<br><br>
 有BUG也歡迎回報<br>
