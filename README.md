@@ -28,11 +28,11 @@ Demo: <a href="http://5566.noip.me" target="_blank">http://5566.noip.me</a><br>
 <br>
 # 畫面展示
 1. Home page<br>
-![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_home.png)<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/git-img/lutalk_home.png)<br>
 2. Build a connection<br>
-![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_connected.png)<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/git-img/lutalk_connected.png)<br>
 3. Chatting<br>
-![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/lutalk_chatting.png)<br>
+![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/git-img/lutalk_chatting.png)<br>
 
 <br>
 <br>
