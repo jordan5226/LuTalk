@@ -101,11 +101,11 @@ body {
 	max-width: 500px;
 	margin: 20px auto 0 auto;
 	padding: 10px 10px 0 10px;	
-	overflow: hidden;
-	overflow-y: auto;
+	overflow: hidden; /* 自動隱藏超出範圍的文字或圖片 */
+	overflow-y: auto; /* y軸的卷軸自動延伸 */
 	line-height: 1.35;
 	text-align: center;
-	border-radius: 10px 10px 0px 0px;
+	border-radius: 10px 10px 0px 0px; /* div元素添加圓角邊框 */
 	background-color: rgba(255,255,255,0.2);
 	-webkit-box-sizing: border-box;
 		-moz-box-sizing: border-box;
@@ -193,7 +193,7 @@ body {
 	padding-top: 8px;
 	clear: both;
 	position: relative;
-	display: inline;
+	display: inline; /* 此div下的子元素呈現在同一行 */
 }
 
 /* 接收的消息 */
