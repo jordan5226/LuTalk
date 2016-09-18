@@ -186,7 +186,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		}
 		// UI元件與程式邏輯的控制
 		$scope.vm.bMqttConnected = false; // mqtt連線狀態flag標記為尚未連線
-		$scope.vm.bConnected = false; // 連線狀態flag標記為false
+		$scope.vm.bConnected = false;     // 連線狀態flag標記為false
 	};
 	
 	/* (接收到消息) 當訂閱的主題有訊息時會被呼叫的callback function */
@@ -299,7 +299,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		
 		// 若用戶正在檢視當前頁面，則向對方知會已讀
 		if($scope.bVisibility) {
-			replyRead("onMessageArrived, viewing reply");       // 向對方知會已讀
+			replyRead("onMessageArrived, viewing reply");    // 向對方知會已讀
 		} else { // 若用戶並未檢視當前頁面
 			$scope.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
 			setTitle(++$scope.nUnread);                      // 未讀消息計數加一並改變標題
@@ -326,7 +326,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		if($scope.vm.bConnected) {             // 若尚未連線則不動作
 			// 已連線則向對方知會已讀
 			sendMsg("Read!"+ strSeparator + " " + strSeparator + "daeR");
-			$scope.bChked_And_Reply = true; // 設置收到訊息後已知會對方
+			$scope.bChked_And_Reply = true;    // 設置收到訊息後已知會對方
 			console.log(strLog);
 		}
 	};
