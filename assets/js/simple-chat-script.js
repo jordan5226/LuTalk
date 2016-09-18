@@ -43,13 +43,14 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	$scope.vm.bSubscribed_strMyname = false;     // 是否有訂閱主題
 	$scope.vm.bConnected = false;                // 雙方是否已連線
 	$scope.vm.bLeave_strObject = false;          // 對方是否已離開
-	$scope.vm.bVisibility = true;                // 用戶目前是否正在使用當前頁面
-	$scope.vm.bChked_And_Reply = false;          // 收到訊息後是否已知會對方已讀
-	$scope.vm.nUnread = 0;                       // 未讀的消息數量
 	$scope.vm.bPlaySound = false;                // 是否發出提示音效
 	$scope.vm.strPageTitle = "LuTalk 嚕聊 （Angular Framework Demo）";    // 頁面標題
 	$scope.vm.strDefaultTitle = "LuTalk 嚕聊 （Angular Framework Demo）"; // 預設標題
 	$scope.vm.bTyping = false;                   // 對方是否正在打字
+	
+	$scope.bVisibility = true;                // 用戶目前是否正在使用當前頁面
+	$scope.bChked_And_Reply = false;          // 收到訊息後是否已知會對方已讀
+	$scope.nUnread = 0;                       // 未讀的消息數量
 	$scope.event = { 'audios': ["incomingMsg.wav"]};                      // 提示音效文件名
 	
 	
@@ -297,11 +298,11 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		$scope.$apply();               // update ui immediately
 		
 		// 若用戶正在檢視當前頁面，則向對方知會已讀
-		if($scope.vm.bVisibility) {
+		if($scope.bVisibility) {
 			replyRead("onMessageArrived, viewing reply");       // 向對方知會已讀
 		} else { // 若用戶並未檢視當前頁面
-			$scope.vm.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
-			setTitle(++$scope.vm.nUnread);                      // 未讀消息計數加一並改變標題
+			$scope.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
+			setTitle(++$scope.nUnread);                      // 未讀消息計數加一並改變標題
 			// 頁面發出提示音效
 			$scope.vm.bPlaySound = false;
 			$scope.$apply();               // update ui immediately
@@ -325,14 +326,14 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		if($scope.vm.bConnected) {             // 若尚未連線則不動作
 			// 已連線則向對方知會已讀
 			sendMsg("Read!"+ strSeparator + " " + strSeparator + "daeR");
-			$scope.vm.bChked_And_Reply = true; // 設置收到訊息後已知會對方
+			$scope.bChked_And_Reply = true; // 設置收到訊息後已知會對方
 			console.log(strLog);
 		}
 	};
 	
 	/* 將網頁標題設為預設字串*/
 	setDefaultTitle = function() {
-		$scope.vm.nUnread = 0;
+		$scope.nUnread = 0;
 		$scope.vm.strPageTitle = $scope.vm.strDefaultTitle;
 	};
 	
@@ -345,7 +346,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	VisibilityChange.onVisible(function() {
 		console.log('onVisible callback called at ' + now());
 		// 用戶回到當前頁面後，若尚未知會對方已讀，則向對方知會已讀
-		if(!$scope.vm.bChked_And_Reply) {
+		if(!$scope.bChked_And_Reply) {
 			replyRead("change-back reply"); // 向對方知會已讀			
 			setDefaultTitle();              // 改回預設標題
 		}
@@ -359,7 +360,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	/* 頁面切換時調用之函數 */
 	VisibilityChange.onChange(function(visible) {
 		console.log('onChange callback called at ' + now() + ' with ' + visible);
-		$scope.vm.bVisibility = visible; // 設置用戶目前是否正在使用當前頁面
+		$scope.bVisibility = visible; // 設置用戶目前是否正在使用當前頁面
 	})
 });
 
