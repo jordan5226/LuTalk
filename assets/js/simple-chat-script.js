@@ -126,10 +126,9 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		if($scope.vm.bSubscribed_strMyname == true) {
 			// DO: 要解除訂閱
 			// 先告訴對方目標我離開了
-			if($scope.vm.bConnected) {               // 若尚未建立連線，則直接解除訂閱
-				// 若已建立連線，則發送離開消息
+			if($scope.vm.bConnected) {               // 若已建立連線，則發送離開消息
 				sendMsg("Quit"+ strSeparator + " " + strSeparator + " ");
-			}
+			} // 若尚未建立連線，則不發送離開消息直接解除訂閱
 			if(!$scope.vm.bLeave_strObject)          // 當對方離開後則不再"取消訂閱對方"，因為在對方離開時已經先取消訂閱了
 				mqtt_client.unsubscribe(myname);     // 對方還沒離開時才取消訂閱對方
 			console.log("unsubscribed");
@@ -176,7 +175,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	onConnect = function () {
 		console.log("onConnect");
 		// UI元件與程式邏輯的控制
-		$scope.vm.mqtt_connect = true;
+		$scope.vm.bMqttConnected = true; // mqtt連線狀態flag標記為已連線
 	};
 	
 	/* 當與MQTT Broker的連結被斷開時會被呼叫的function */
@@ -185,7 +184,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			console.log("onConnectionLost:" + responseObject.errorMessage);
 		}
 		// UI元件與程式邏輯的控制
-		$scope.vm.mqtt_connected = false;
+		$scope.vm.bMqttConnected = false; // mqtt連線狀態flag標記為尚未連線
 		$scope.vm.bConnected = false; // 連線狀態flag標記為false
 	};
 	
