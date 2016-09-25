@@ -17,7 +17,7 @@ var strSeparator = "|::|";             // 消息字串內部分隔符
 var nMaxLen_Msg = 495;                 // 消息字串最大長度
 
 var inputChangedPromise = null;
-		
+
 // Define the module
 var luTalkApp =angular.module('luTalkApp', ['visibilityChange']);
 
@@ -43,16 +43,14 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	$scope.vm.bSubscribed_strMyname = false;     // 是否有訂閱主題
 	$scope.vm.bConnected = false;                // 雙方是否已連線
 	$scope.vm.bLeave_strObject = false;          // 對方是否已離開
-	$scope.vm.bPlaySound = false;                // 是否發出提示音效
 	$scope.vm.strPageTitle = "LuTalk 嚕聊 （Angular Framework Demo）";    // 頁面標題
 	$scope.vm.strDefaultTitle = "LuTalk 嚕聊 （Angular Framework Demo）"; // 預設標題
 	$scope.vm.bTyping = false;                   // 對方是否正在打字
 	
-	$scope.bVisibility = true;                // 用戶目前是否正在使用當前頁面
-	$scope.bChked_And_Reply = false;          // 收到訊息後是否已知會對方已讀
-	$scope.nUnread = 0;                       // 未讀的消息數量
-	$scope.event = { 'audios': ["incomingMsg.wav"]};                      // 提示音效文件名
-	
+	$scope.bVisibility = true;                   // 用戶目前是否正在使用當前頁面
+	$scope.bChked_And_Reply = false;             // 收到訊息後是否已知會對方已讀
+	$scope.nUnread = 0;                          // 未讀的消息數量
+	$scope.audio = document.getElementById("audio_play"); // audio_play element
 	
 	
 	// 設定UI會觸發的動作
@@ -142,6 +140,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bHasChatlog = false;           // 聊天記錄無消息
 			$scope.vm.chatLog = [];                  // 把聊天記錄清空
 			$scope.vm.strMessage = "";               // 用戶消息輸入框清空
+			$scope.audio.muted = true;               // 靜音
 		} else {
 			// DO: 要訂閱訊息主題
 			mqtt_client.subscribe(myname);
@@ -153,6 +152,9 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bSubscribed_strMyname = true;  // 更新flag
 			$scope.vm.chatLog = [];                  // 先把聊天記錄清空
 			$scope.vm.bHasChatlog = true;            // 聊天記錄設為有消息，以顯示聊天對話框
+			// auto load audio data when start chat
+			$scope.audio.muted = true;               // 以靜音撥放
+			$scope.audio.click();                    // 模擬點擊Audio Play事件
 		}
 	};
 	
@@ -226,6 +228,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bConnected = true;        // 連線狀態flag標記為true
 			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                    // update ui immediately
+			$scope.audio.muted = false;         // 取消靜音
 			return;
 		}
 		// 判斷收到的消息是否為已上線消息(Online)
@@ -234,6 +237,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bConnected = true;        // 連線狀態flag標記為true
 			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                    // update ui immediately
+			$scope.audio.muted = false;         // 取消靜音
 			return;
 		}
 		// 判斷收到的消息是否為對方已離開(Quit)
@@ -252,6 +256,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			});
 			$scope.vm.bTyping = false; // 設置對方打字狀態為"停止打字"
 			$scope.$apply();           // update ui immediately
+			$scope.audio.muted = true; // 靜音
 			return;
 		}
 		// 判斷收到的消息是否為正在打字消息(Typing)
@@ -304,10 +309,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
 			setTitle(++$scope.nUnread);                      // 未讀消息計數加一並改變標題
 			// 頁面發出提示音效
-			$scope.vm.bPlaySound = false;
-			$scope.$apply();               // update ui immediately
-			$scope.vm.bPlaySound = true;
-			$scope.$apply();               // update ui immediately
+			$scope.audio.click();          // 模擬點擊Audio Play事件
 			console.log("onMessageArrived but not viewing");
 		}
 		/* ==========================End Do: 收到聊天消息之處理========================== */
@@ -383,20 +385,4 @@ luTalkApp.directive('schrollBottom', ['$timeout', function ($timeout) {
 	}
 }]);
 
-/* 消息提示音 */
-luTalkApp.directive('audios', function($sce) {
-  return {
-    restrict: 'A',
-    scope: { code: '=' },
-    replace: true,
-    template: '<audio ng-src="{{url}}" controls autoplay></audio>',
-    link: function (scope) {
-        scope.$watch('code', function (newVal, oldVal) {
-           if (newVal !== undefined) {
-               scope.url = $sce.trustAsResourceUrl("assets/media/" + newVal);
-           }
-        });
-    }
-  };
-});
 

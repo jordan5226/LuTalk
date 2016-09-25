@@ -24,6 +24,17 @@ Description:
   
 	<script type="text/javascript">
 		function autoClick () {
+			// add listener	
+			var audio = document.getElementById("audio_play");
+			audio.addEventListener("click", function() {
+				audio.play();
+				if( audio.muted ) // 若正以靜音播放
+				{
+					audio.pause();
+					audio.currentTime = 0;
+				}
+			}, false);
+			//
 			document.getElementById('btnConnect').click();
 		}
 	</script>
@@ -121,16 +132,15 @@ Description:
 			</form>
 		</footer>
 	</div>
-	
-	<div style="display:none; width:0; height:0;" ng-repeat="audio in event.audios" ng-show="vm.bPlaySound">
-		<div style="width:0; height:0;" audios code="audio" ng-if="vm.bPlaySound"></div>
-	</div>
-	<!-- 當頁面的visibility為hidden時，收到消息雖會啟用audio標籤，但音頻文件不會被載入，故需要下方的預載入音頻代碼 -->
+
+	<!-- 直接以HTML5操作Audio -->
 	<div style="display:none; width:0; height:0;">
-		<!-- 頁面載入時靜音撥放音頻來載入音頻文件緩衝，注意避免使用preload卻被browser當作hint而失效 -->
-		<!-- Note: The preload attribute is ignored if autoplay is present. -->
-		<audio style="width:0; height:0;" src="assets/media/incomingMsg.wav" controls autoplay muted></audio>
+		<audio id="audio_play" style="width:0; height:0;" autobuffer controls >
+			<source src="assets/media/incomingMsg.mp3" type="audio/mpeg">
+			<source src="assets/media/incomingMsg.wav" type="audio/wav">
+		</audio>
 	</div>
+	
 	<!-- 程式邏輯 -->
 	<script type="text/javascript" src="assets/js/simple-chat-script.js"></script>
 </body>
