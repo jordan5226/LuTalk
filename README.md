@@ -2,14 +2,11 @@
 The Real-time Web Chat App.<br>
 Implement with AngularJs framework and MQTT protocal.<br>
 Attention: The IE web browser may not be well support LuTalk.<br>
-Demo: <a href="http://lutalk.sytes.net" target="_blank">http://lutalk.sytes.net</a><br>
+Demo: <a href="http://lutalk.sytes.net" target="_blank">http://54.206.107.152:8080/anonymous-chat.html</a><br>
 
 # LuTalk 嚕聊
 這是一個即時聊天Web應用 <br>
 技術上使用到了AngularJs Framework，以及MQTT<br>
-<br>
-作為Web開發新手的第一個實作，我選擇了山寨WooTalk當作練習<br>
-因此若看倌發覺介面有點熟悉還請不要見怪<br>
 
 # 功能與特性
 1. 包含了基本即時聊天所需之功能：發送消息和接收消息<br>
