@@ -1,27 +1,28 @@
-﻿/*==================================================================*/
-/* Title:          LuTalk 嚕聊 - The Real-time Web Chat App(Script) */
-/* Author:         Jordan  Yeh                                      */
-/* Date(YY/MM/DD): 2016/09/09                                       */
-/* Description:                                                     */
-/*   This is an 1 to 1 online chat script for LuTalk.               */
-/*   Implement with AngularJs framework and MQTT protocol.          */
-/*   This is a web chat app in simple-chat mode.                    */
-/*==================================================================*/
+﻿/*========================================================================*/
+/* Title:          LuTalk 嚕聊 - The Real-time Web Chat App(Script)       */
+/* Author:         Jordan  Yeh                                            */
+/* Date(YY/MM/DD): 2016/10/11                                             */
+/* Description:                                                           */
+/*   This is an 1 to 1 online chat script for LuTalk.                     */
+/*   Implement with AngularJs framework and MQTT protocol.                */
+/*   Initializing 1 to 1 chat session through the random pairing system.  */
+/*========================================================================*/
 
-// MQTT配置
+
+/* MQTT配置 */
 var mqtt_client;
-var mqtt_broker_host = "5566.noip.me"; // MQTT server hostname/ip
+var mqtt_broker_host = "54.206.107.152"; // MQTT server hostname/ip
 var mqtt_broker_port = 9001;           // MQTT server port
 
 var strSeparator = "|::|";             // 消息字串內部分隔符
-var nMaxLen_Msg = 495;                 // 消息字串最大長度
+var nMaxLen_Msg  = 495;                // 消息字串最大長度
 
 var inputChangedPromise = null;
-
+		
 // Define the module
-var luTalkApp =angular.module('luTalkApp', ['visibilityChange']);
+var luTalkApp = angular.module('luTalkApp', ['visibilityChange']);
 
-// Define the factory
+/* Define the factory */
 // 獲取時間
 luTalkApp.factory('now', function() {
 	return function() {
@@ -29,28 +30,47 @@ luTalkApp.factory('now', function() {
 	};
 })
 
+// LocalStorage
+luTalkApp.factory('localService', function() {
+	return {
+		set: function(key, value) {
+			return localStorage.setItem(key, value);
+		},
+		get: function(key) {
+			return localStorage.getItem(key);
+		},
+		destroy: function(key) {
+			return localStorage.removeItem(key);
+		}
+	};
+})
+
+
 // Define the controller
-luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, VisibilityChange) {
+luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, VisibilityChange, localService) {
 	// 初始化view model的資料與變數
-	$scope.vm = {};
-	$scope.vm.strMyname = "";                    // 我的名稱
-	$scope.vm.strObject = "";                    // 對方名稱
-	$scope.vm.last_object = "";                  // 上一個發送目標
-	$scope.vm.strMessage = "";                   // 消息輸入框中的字串
-	$scope.vm.stateBtn = "開始聊天";             // 開始聊天按鈕(訂閱主題按鈕)
-	$scope.vm.chatLog = [];                      // 聊天記錄
-	$scope.vm.bHasChatlog = false;               // 是否有聊天記錄
-	$scope.vm.bSubscribed_strMyname = false;     // 是否有訂閱主題
-	$scope.vm.bConnected = false;                // 雙方是否已連線
-	$scope.vm.bLeave_strObject = false;          // 對方是否已離開
-	$scope.vm.strPageTitle = "LuTalk 嚕聊 （Angular Framework Demo）";    // 頁面標題
-	$scope.vm.strDefaultTitle = "LuTalk 嚕聊 （Angular Framework Demo）"; // 預設標題
-	$scope.vm.bTyping = false;                   // 對方是否正在打字
+	$scope.vm                       = {};
+	$scope.vm.strMyname             = "";                    // 我的名稱
+	$scope.vm.strObject             = "";                    // 對方名稱
+	$scope.vm.last_object           = "";                    // 上一個發送目標
+	$scope.vm.strMessage            = "";                    // 消息輸入框中的字串
+	$scope.vm.stateBtn              = "開始聊天";            // 開始聊天按鈕(訂閱主題按鈕)
+	$scope.vm.strPageTitle          = "LuTalk 嚕聊 （Angular Framework Demo）"; // 頁面標題
+	$scope.vm.strDefaultTitle       = "LuTalk 嚕聊 （Angular Framework Demo）"; // 預設標題
+	$scope.vm.chatLog               = [];                    // 聊天記錄
+	$scope.vm.bHasChatlog           = false;                 // 是否有聊天記錄
+	$scope.vm.bSubscribed_strMyname = false;                 // 是否有訂閱主題
+	$scope.vm.bConnected            = false;                 // 雙方連線狀態
+	$scope.vm.bLeave_strObject      = false;                 // 對方是否已離開
+	$scope.vm.bTyping               = false;                 // 對方是否正在打字
 	
-	$scope.bVisibility = true;                   // 用戶目前是否正在使用當前頁面
-	$scope.bChked_And_Reply = false;             // 收到訊息後是否已知會對方已讀
-	$scope.nUnread = 0;                          // 未讀的消息數量
-	$scope.audio = document.getElementById("audio_play"); // audio_play element
+	$scope.bNeedReconnect           = false;                 // MQTT斷線後是否需要重新建立雙方連線
+	$scope.bVisibility              = true;                  // 用戶目前是否正在使用當前頁面
+	$scope.bChked_And_Reply         = false;                 // 收到訊息後是否已知會對方已讀
+	$scope.nUnread                  = 0;                     // 未讀的消息數量
+	$scope.strWindowID              = "";                    // 當前窗口的獨立ID(判斷消息發送來源窗口時會用到)
+	
+	$scope.elmAudio = document.getElementById("audio_play"); // audio_play element
 	
 	
 	// 設定UI會觸發的動作
@@ -60,7 +80,8 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	$scope.action.connect = function () {
 		console.log("connecting...");
 		// 產生MQTT連結client物件的instance
-		mqtt_client = new Paho.MQTT.Client(mqtt_broker_host, Number(mqtt_broker_port), Math.uuid(8, 16));
+		$scope.strWindowID = Math.uuid(8, 16);
+		mqtt_client = new Paho.MQTT.Client( mqtt_broker_host, Number(mqtt_broker_port), $scope.strWindowID );
 		// 設定某些事件的回呼處理的functions
 		mqtt_client.onConnectionLost = onConnectionLost;
 		mqtt_client.onMessageArrived = onMessageArrived;
@@ -116,8 +137,11 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	
 	/* 開始、離開按鈕之訂閱事件 */
 	$scope.action.changeState = function() {
-		if($scope.vm.strMyname.trim().length == 0
+		/*if($scope.vm.strMyname.trim().length == 0
 			|| $scope.vm.strObject.trim().length == 0) // 若首頁雙input欄位有空值則函數返回
+			return;*/
+			
+		if(!$scope.vm.bMqttConnected) // 尚未連線到MQTT服務器
 			return;
 		
 		// 訂閱或解除訂閱消息
@@ -128,6 +152,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			if($scope.vm.bConnected) {               // 若已建立連線，則發送離開消息
 				sendMsg("Quit"+ strSeparator + " " + strSeparator + " ");
 			} // 若尚未建立連線，則不發送離開消息直接解除訂閱
+			
 			if(!$scope.vm.bLeave_strObject)          // 當對方離開後則不再"取消訂閱對方"，因為在對方離開時已經先取消訂閱了
 				mqtt_client.unsubscribe(myname);     // 對方還沒離開時才取消訂閱對方
 			console.log("unsubscribed");
@@ -136,25 +161,36 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bConnected = false;            // 連線狀態flag標記為false
 			$scope.vm.bLeave_strObject = false;      // 對方離開狀態flag標記為false
 			$scope.vm.stateBtn = "開始聊天";         // 更換上下線button的label
-			$scope.vm.bSubscribed_strMyname = false; // 更新flag
+			$scope.vm.bSubscribed_strMyname = false; // 更新訂閱主題狀態flag
 			$scope.vm.bHasChatlog = false;           // 聊天記錄無消息
 			$scope.vm.chatLog = [];                  // 把聊天記錄清空
 			$scope.vm.strMessage = "";               // 用戶消息輸入框清空
-			$scope.audio.muted = true;               // 靜音
+			$scope.elmAudio.muted = true;            // 靜音
+			// Destroy LocalStorage
+			localService.destroy('LUTALK_USER_ID');
+			localService.destroy('LUTALK_OBJECT_ID');
 		} else {
 			// DO: 要訂閱訊息主題
+			// 產生獨立ID發送給配對服務器，而後等待服務器配對完成後建立與對方的連線
+			if( null == $scope.vm.userID ) // 若LocalStorage中沒有LUTALK_USER_ID
+			{
+				// 產生LUTALK_USER_ID並發送到Paring Server等待配對
+			}
+			
+			
+			
 			mqtt_client.subscribe(myname);
 			// 向對方發送建立連線請求
 			sendMsg("Connect"+ strSeparator + " " + strSeparator + " ");
 			console.log("subscribed");
 			// UI元件的控制
 			$scope.vm.stateBtn = "離開";             // 更換上下線button的label
-			$scope.vm.bSubscribed_strMyname = true;  // 更新flag
+			$scope.vm.bSubscribed_strMyname = true;  // 更新訂閱主題狀態flag
 			$scope.vm.chatLog = [];                  // 先把聊天記錄清空
 			$scope.vm.bHasChatlog = true;            // 聊天記錄設為有消息，以顯示聊天對話框
 			// auto load audio data when start chat
-			$scope.audio.muted = true;               // 以靜音撥放
-			$scope.audio.click();                    // 模擬點擊Audio Play事件
+			$scope.elmAudio.muted = true;            // 以靜音撥放
+			$scope.elmAudio.click();                 // 模擬點擊Audio Play事件
 		}
 	};
 	
@@ -178,7 +214,34 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 	onConnect = function () {
 		console.log("onConnect");
 		// UI元件與程式邏輯的控制
-		$scope.vm.bMqttConnected = true; // mqtt連線狀態flag標記為已連線
+		$scope.vm.bMqttConnected = true;                    // mqtt連線狀態flag標記為已連線
+		// 雙方重新建立連線
+		if( $scope.bNeedReconnect )                         // 若雙方有需要重新建立連線
+		{
+			if( $scope.vm.strMyname.trim().length != 0 )    // 我方代號(名稱)不為空
+				mqtt_client.subscribe($scope.vm.strMyname); // 我方重新訂閱就好，因為不是真的雙方持久連線
+			$scope.vm.bConnected = true;                    // 連線狀態flag標記為true
+			$scope.bNeedReconnect = false;                  // Reset flag
+			return;
+		}
+		
+		// 判斷有無LocalStorage數據
+		$scope.vm.userID = localService.get('LUTALK_USER_ID');
+		console.log("User ID: " + $scope.vm.userID);
+		if( null != $scope.vm.userID) { // LocalStorage中有LUTALK_USER_ID，表示存在聊天Session
+			$scope.vm.objectID = localService.get('LUTALK_OBJECT_ID');
+			console.log("Object ID: " + $scope.vm.objectID);
+			if( null == $scope.vm.objectID ) { // 目標對象ID不存在
+				// 發生錯誤
+				$scope.vm.userID = null;
+			}
+			else{
+				$scope.vm.strMyname = $scope.vm.userID;
+				$scope.vm.strObject = $scope.vm.objectID;
+				$scope.action.changeState(); // 開始訂閱訊息，並建立雙方連線
+				$scope.$apply(); // update ui immediately, 否則不是藉由UI的呼叫會讓窗口被判定為沒有更新
+			}
+		}
 	};
 	
 	/* 當與MQTT Broker的連結被斷開時會被呼叫的function */
@@ -186,9 +249,14 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		if(responseObject.errorCode != 0) {
 			console.log("onConnectionLost:" + responseObject.errorMessage);
 		}
+		// 若斷線之前，雙方已連線中
+		if( $scope.vm.bConnected )
+			$scope.bNeedReconnect = true;
 		// UI元件與程式邏輯的控制
 		$scope.vm.bMqttConnected = false; // mqtt連線狀態flag標記為尚未連線
 		$scope.vm.bConnected = false;     // 連線狀態flag標記為false
+		
+		$scope.action.connect();          // reconnect to MQTT server
 	};
 	
 	/* (接收到消息) 當訂閱的主題有訊息時會被呼叫的callback function */
@@ -228,7 +296,10 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bConnected = true;        // 連線狀態flag標記為true
 			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                    // update ui immediately
-			$scope.audio.muted = false;         // 取消靜音
+			$scope.elmAudio.muted = false;      // 取消靜音
+			// Set LocalStorage
+			localService.set('LUTALK_USER_ID', $scope.vm.strMyname);
+			localService.set('LUTALK_OBJECT_ID', $scope.vm.strObject);
 			return;
 		}
 		// 判斷收到的消息是否為已上線消息(Online)
@@ -237,7 +308,10 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.vm.bConnected = true;        // 連線狀態flag標記為true
 			$scope.vm.bLeave_strObject = false; // 對方離開狀態flag標記為false
 			$scope.$apply();                    // update ui immediately
-			$scope.audio.muted = false;         // 取消靜音
+			$scope.elmAudio.muted = false;      // 取消靜音
+			// Set LocalStorage
+			localService.set('LUTALK_USER_ID', $scope.vm.strMyname);
+			localService.set('LUTALK_OBJECT_ID', $scope.vm.strObject);
 			return;
 		}
 		// 判斷收到的消息是否為對方已離開(Quit)
@@ -254,9 +328,12 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 				name: " ",
 				content: "對方已離開，請按離開按鈕退出。"
 			});
-			$scope.vm.bTyping = false; // 設置對方打字狀態為"停止打字"
-			$scope.$apply();           // update ui immediately
-			$scope.audio.muted = true; // 靜音
+			$scope.vm.bTyping = false;    // 設置對方打字狀態為"停止打字"
+			$scope.$apply();              // update ui immediately
+			$scope.elmAudio.muted = true; // 靜音
+			// Destroy LocalStorage
+			localService.destroy('LUTALK_USER_ID');
+			localService.destroy('LUTALK_OBJECT_ID');
 			return;
 		}
 		// 判斷收到的消息是否為正在打字消息(Typing)
@@ -309,7 +386,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 			$scope.bChked_And_Reply = false;                 // 設置收到訊息後尚未知會對方
 			setTitle(++$scope.nUnread);                      // 未讀消息計數加一並改變標題
 			// 頁面發出提示音效
-			$scope.audio.click();          // 模擬點擊Audio Play事件
+			$scope.elmAudio.click();                         // 模擬點擊Audio Play事件
 			console.log("onMessageArrived but not viewing");
 		}
 		/* ==========================End Do: 收到聊天消息之處理========================== */
@@ -328,7 +405,7 @@ luTalkApp.controller('luTalkAppCtrl', function($scope, $timeout, now, Visibility
 		if($scope.vm.bConnected) {             // 若尚未連線則不動作
 			// 已連線則向對方知會已讀
 			sendMsg("Read!"+ strSeparator + " " + strSeparator + "daeR");
-			$scope.bChked_And_Reply = true;    // 設置收到訊息後已知會對方
+			$scope.bChked_And_Reply = true; // 設置收到訊息後已知會對方
 			console.log(strLog);
 		}
 	};
@@ -384,5 +461,3 @@ luTalkApp.directive('schrollBottom', ['$timeout', function ($timeout) {
 		}
 	}
 }]);
-
-

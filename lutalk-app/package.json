@@ -1,0 +1,13 @@
+{
+	"name": "Lutalk",
+	"version": "1.0.0",
+	"description": "Lutalk - The Realtime Web Chat App",
+	"author": "jordan5226",
+	"main": "server.js",
+	"scripts": {
+	    "start": "node server.js"
+	},
+	"dependencies": {
+	    "express": "^4.13.3"
+	}
+}
