@@ -1,11 +1,11 @@
 # LuTalk
 The Real-time Web Chat App.<br>
 Implement with AngularJs framework and MQTT protocal.<br>
-Attention: The IE web browser may not be well support LuTalk.<br>
-Demo: <a href="http://lutalk.sytes.net" target="_blank">http://54.206.107.152:8080/anonymous-chat.html</a><br>
+( Note: The IE web browser may not be well support LuTalk. )<br>
+Demo: <a href="http://54.206.107.152:8080/anonymous-chat.html" target="_blank">http://54.206.107.152:8080/anonymous-chat.html</a><br>
 
 # LuTalk 嚕聊
-這是一個即時聊天Web應用 <br>
+這是一個線上即時聊天Web應用 <br>
 技術上使用到了AngularJs Framework，以及MQTT<br>
 
 # 功能與特性
@@ -15,6 +15,7 @@ Demo: <a href="http://lutalk.sytes.net" target="_blank">http://54.206.107.152:80
 4. 當Web Browser頁面並非停留在LuTalk頁面時(或切換至其他App)，接收到消息會判定為未讀，並發出提示音效，同時網頁標題也會顯示未讀消息數量來提示用戶查收<br>
    2016-09-25更新，支援行動設備Web Browser於背景播放音效，繞過行動設備不支援audio autoplay的限制 ( *目前iOS尚未實測 )<br>
 5. 聊天介面中會顯示對方是否正在輸入聊天消息，藉此增強用戶體驗<br>
+6. anonymous-chat中實作了暫離會話特性，不按離開而是關閉瀏覽器，在下一次返回網頁時會自動恢復會話。
 <br>
 
 尚未有"記錄聊天消息"的功能<br>
@@ -25,6 +26,37 @@ Demo: <a href="http://lutalk.sytes.net" target="_blank">http://54.206.107.152:80
 注意：IE瀏覽器可能沒辦法良好支援
 <br>
 <br>
+# Installation
+Create a folder named `docker`, and move `lutalk` and `lutalk-app` into `docker`.   
+  
+**- MQTT**
+1. Create folder to store mqtt data  
+`mkdir $HOME/docker/service-mqtt/data -p`  
+
+2. Start docker container of the mqtt broker  
+   ```
+   docker run -p 1883:1883 -p 9001:9001 \
+   --name service-mqtt \
+   -v $HOME/docker/service-mqtt/data:/mqtt/data:ro \
+   -d toke/mosquitto
+   ```
+3. Check Running Status  
+`docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}\t{{.Ports}}"`  
+
+**- Web Service**
+1. Build Docker Image  
+`cd $HOME/docker/lutalk-app`  
+2. Use 'docker build' to build container image  
+`docker build -t jordan/lutalk .`  
+3. Check if Docker image is completely packed  
+`docker images jordan/lutalk`  
+
+4. Run Docker Image  
+   ```
+   mkdir $HOME/docker/lutalk/public -p   ( If it doesn't exist. )
+   docker run -p 8080:8080 --name lutalk -v $HOME/docker/lutalk/public:/usr/src/app/public:rw -d jordan/lutalk
+   ```
+
 # 畫面展示
 1. Home page<br>
 ![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/git-img/lutalk_home.png)<br>
@@ -33,15 +65,3 @@ Demo: <a href="http://lutalk.sytes.net" target="_blank">http://54.206.107.152:80
 3. Chatting<br>
 ![alt tag](https://raw.githubusercontent.com/jordan5226/LuTalk/master/git-img/lutalk_chatting.png)<br>
 
-<br>
-<br>
-# 問題與建議
-歡迎提供意見與想法讓我能參考<br><br>
-有BUG也歡迎回報<br>
-敬請提問<br>
-<br>
-<br>
-# 環境配置
-關於開發過程中具體所需的環境之安裝，請參考以下網頁之詳細講解<br>
-<a href="http://eighty20.cc/apps/e2-rtw-v01/index.html" target="_blank" title="即時網頁應用開發 - 手把手">http://eighty20.cc/apps/e2-rtw-v01/index.html</a> <br>
-特別要感謝講者整理的一系列教學，獲益良多<br>
